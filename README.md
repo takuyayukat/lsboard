@@ -4,6 +4,8 @@
 
 並列に動く AI エージェント（Claude Code とそのサブエージェントなど）の状態を、1 作業者 1 ファイルのファイル名に表すボードです。親エージェントは `lsboard wait` で子の変化を**トークンを使わずに**待てます。
 
+状態をファイル名に持ち rename で原子的に反映する骨格は Maildir と同じで、それを AI エージェントの hook と親子関係を持つ作業者に当てはめたものです。
+
 ```console
 $ ls ~/.local/state/lsboard/board
 10-waiting__k3f9.01__claude__explorer approve Bash
@@ -68,6 +70,16 @@ sid は親子を表します（`k3f9` → `k3f9.01` → `k3f9.01.02`）。
 - SessionEnd の hook で自分の entry を終わらせるのは `prompt_input_exit` と `logout` のときだけです。`/clear` などセッションが続く理由では触るだけで、サブエージェントの子だけを終わらせます。プロセスが本当に終わったときの片付けは `lsboard run` が行います
 - `lsboard run` に TERM / HUP が来ると子に TERM を転送し、子が終わってから entry を片付けます。Ctrl-C は子に任せます（親は無視します）
 - v1 は macOS / Linux のローカルの board だけを対象にします。docker / VM の中の board を外から読む仕組み、Claude Code 以外の hook は将来の課題です
+
+## ドキュメント
+
+- [docs/concept.md](docs/concept.md) — 何を解くか、先例、やらないこと、用語
+- [docs/principles.md](docs/principles.md) — 根幹のルール。制約の 2 種類、核になる規則、効率の原則
+- [docs/spec.md](docs/spec.md) — 規範となる仕様。board の配置、ファイル名の文法、ロックと更新の手順、wait / watch の出力
+- [docs/hooks/claude.md](docs/hooks/claude.md) — Claude Code の hook の登録と遷移表、実機で確かめたこと
+- [docs/adapters.md](docs/adapters.md) — 他のエージェントのアダプタを足す手順と、候補について分かっていること
+- [docs/decisions.md](docs/decisions.md) — 日付つきの決定の記録
+- [docs/roadmap.md](docs/roadmap.md) — v1 の範囲と将来課題
 
 ## 開発
 
